@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mockHttpd>
+
+	<server hostname="localhost" port="8005"/>
+	<log id="MockHTTP" level="normal"/>
+
+	<mimeTypes>
+		<css fileType="text">text/css</css>
+		<gif fileType="binary">image/gif</gif>
+		<!--html fileType="text">application/xhtml+xml</html-->
+		<html fileType="text">text/html</html>
+		<ico fileType="binary">image/vnd.microsoft.icon</ico>
+		<jpg fileType="binary">image/jpeg</jpg>
+		<js fileType="text">application/javascript</js>
+		<png fileType="binary">image/png</png>
+		<text fileType="text">text/plain</text>
+		<xhtml fileType="text">application/xhtml+xml</xhtml>
+		<xml fileType="text">text/xml</xml>
+		<svg fileType="text">image/svg+xml</svg>
+		<ws fileType="text">text/xml</ws>
+	</mimeTypes>
+
+	<sessions name="method_session_id">
+		<session id="USERID">
+			<messageHeaders mimeType="" agentName="" agentVersion="">
+				<Set-Cookie>webapp_session_id=USERID; path=/; expires=${_GMTSTRING+900};</Set-Cookie>
+			</messageHeaders>
+		</session>
+	</sessions>
+
+	<transactions documentRoot="../../../src" directoryIndex="index.html">
+
+		<default>
+			<response>
+				<macros>
+					<CSS>${agentName}</CSS>
+				</macros>
+				<statusLine httpVersion="HTTP/1.1" statusCode="200" reasonPhrase="OK"/>
+				<messageHeaders>
+					<Connection>Close</Connection>
+					<Content-Length>${contentLength}</Content-Length>
+					<Content-Type>${mimeType}</Content-Type>
+				</messageHeaders>
+				<messageBody mimeType="text/html" statusCode="404" reasonPhrase="Not Found">
+					<![CDATA[
+						<?xml version="1.0" encoding="utf-8"?><html><head><title>Mock HTTPD Server</title></head><body><h1>Mock HTTPD Server - ${_GMTSTRING}</h1><h2>${uri} - 404 Not Found</h2></body></html>
+					]]>
+				</messageBody>
+				<messageBody mimeType="text/xml" statusCode="404" reasonPhrase="Not Found">
+					<![CDATA[
+						<!-- ${uri} 404 Not Found -->
+					]]>
+				</messageBody>
+				<messageBody mimeType="application/javascript" statusCode="404" reasonPhrase="Not Found">
+					<![CDATA[
+						// ${uri} 404 Not Found
+					]]>
+				</messageBody>
+			</response>
+		</default>
+
+		<transaction id="index.html" uri="/index.html" method="GET">
+			<response>
+				<messageBody mimeType="text/html">
+					<![CDATA[
+						<?xml version="1.0" encoding="utf-8"?>
+						<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+						<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head><title>Mock HTTPD Server</title></head><body><h1>Mock HTTPD Server - ${_GMTSTRING}</h1></body></html>
+					]]>
+				</messageBody>
+			</response>
+		</transaction>
+
+		<transaction id="testpilot.css" uri="/css/testpilot.css" method="GET">
+			<response>
+				<messageBody mimeType="text/css">${_IMPORT main/css/testpilot.css}</messageBody>
+			</response>
+		</transaction>
+
+		<transaction id="testpilot.html" uri="/testpilot.html" method="GET">
+			<response>
+				<messageBody mimeType="text/html">${_IMPORT main/html/testpilot.html}</messageBody>
+			</response>
+		</transaction>
+
+		<transaction id="annotations.js" uri="/javascript/annotations.js" method="GET">
+			<response>
+				<messageBody mimeType="application/javascript">${_IMPORT ../../annotations.js/dist/annotations.js}</messageBody>
+			</response>
+		</transaction>
+
+		<transaction id="testpilot.js" uri="/javascript/testpilot.js" method="GET">
+			<response>
+				<messageBody mimeType="application/javascript">${_IMPORT main/javascript/testpilot.js};${_IMPORT main/javascript/testpilot-browser.js}</messageBody>
+			</response>
+		</transaction>
+
+		<transaction id="testpilot-Node.js" uri="/javascript/testpilot-Node.js" method="GET">
+			<response>
+				<messageBody mimeType="application/javascript">${_IMPORT main/javascript/testpilot-node-prefix.js};${_IMPORT main/javascript/testpilot.js};${_IMPORT main/javascript/testpilot-node-suffix.js}</messageBody>
+			</response>
+		</transaction>
+
+		<transaction id="test1.js" uri="/javascript/test1.js" method="GET">
+			<response>
+				<messageBody mimeType="application/javascript">${_IMPORT test/javascript/test1.js}</messageBody>
+			</response>
+		</transaction>
+
+		<transaction id="test2.js" uri="/javascript/test2.js" method="GET">
+			<response>
+				<messageBody mimeType="application/javascript">${_IMPORT test/javascript/test2.js}</messageBody>
+			</response>
+		</transaction>
+
+		<transaction id="test4.js" uri="/javascript/test4.js" method="GET">
+			<response>
+				<messageBody mimeType="application/javascript">${_IMPORT test/javascript/test4.js}</messageBody>
+			</response>
+		</transaction>
+
+		<transaction id="test5.js" uri="/javascript/test5.js" method="GET">
+			<response>
+				<messageBody mimeType="application/javascript">${_IMPORT test/javascript/test5.js}</messageBody>
+			</response>
+		</transaction>
+
+		<transaction id="test6.js" uri="/javascript/test6.js" method="GET">
+			<response>
+				<messageBody mimeType="application/javascript">${_IMPORT test/javascript/test6.js}</messageBody>
+			</response>
+		</transaction>
+
+		<transaction id="testpilot-test-suite.js" uri="/javascript/testpilot-test-suite.js" method="GET">
+			<response>
+				<messageBody mimeType="application/javascript">
+					var __TestPilot = require("./testpilot-node.js");
+					__TestPilot.setNamespace(module);
+					${_IMPORT test/javascript/test1.js}
+					${_IMPORT test/javascript/test2.js}
+					${_IMPORT test/javascript/test3.js}
+					${_IMPORT test/javascript/test4.js}
+					__TestPilot.runUnitTests();
+					console.log(JSON.stringify(__TestPilot.getSummary(), null, "  "));
+					console.log(JSON.stringify(__TestPilot.getResults(), null, "  "));
+				</messageBody>
+			</response>
+		</transaction>
+
+	</transactions>
+
+</mockHttpd>

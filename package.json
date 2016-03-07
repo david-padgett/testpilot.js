@@ -1,0 +1,21 @@
+{
+  "name": "testpilot.js",
+  "version": "1.0.0",
+  "description": "annotations.js - a type, method, and object annotations-enabling library for JavaScript.",
+  "main": "dist/testpilot-node.js",
+	"scripts": {
+		"test": "make -f anotations.mak test"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/david-padgett/anotations.js"
+	},
+	"keywords": [
+		"JavaScript unit test framework", "annotation-based unit test framework", "JavaScript unit test"
+	],
+	"author": "David Padgett <david@summitstreet.biz> (http://summitstreet.biz/)",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/david-padgett/anotations.js/issues"
+	}
+}
