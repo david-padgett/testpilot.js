@@ -1,5 +1,5 @@
-#Annotations.js
-> A type, method, and object annotations-enabling library for JavaScript.
+#testpilot.js
+> An annotation-based test framework for JavaScript.
 
 ##License
 
