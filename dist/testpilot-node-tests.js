@@ -197,6 +197,5 @@ function test4() {
 $Annotate(test4);
 
 __TestPilot.runUnitTests();
-console.log(JSON.stringify(__TestPilot.getResults(), null, "  "));
-console.log(JSON.stringify(__TestPilot.getSummary(), null, "  "));
+console.log("\n" + __TestPilot.getReport());
 process.exit(0);
