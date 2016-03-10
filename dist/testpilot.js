@@ -94,47 +94,47 @@ var __TestPilot = {
 		var members = [__TestPilot.AnnotationTypes.UnitTestAnnotation.name, __TestPilot.AnnotationTypes.BeforeAnnotation.name, __TestPilot.AnnotationTypes.BeforeClassAnnotation.name, __TestPilot.AnnotationTypes.AfterAnnotation.name, __TestPilot.AnnotationTypes.AfterClassAnnotation.name, __TestPilot.AnnotationTypes.TestAnnotation.name, __TestPilot.AnnotationTypes.IgnoreAnnotation.name, __TestPilot.Assertions.assert.name, __TestPilot.Assumptions.assume.name, __TestPilot.message.name];
 		for (var i = 0; i < members.length; ++i) {
 			this[members[i]] = new __TestPilot.SummaryValue(0, 0, 0);
-		}
+		};
 
 		this.getUnitTestSummary = function() {
 			return (this[members[0]]);
-		}
+		};
 
 		this.getBeforeSummary = function() {
 			return (this[members[1]]);
-		}
+		};
 
 		this.getBeforeClassSummary = function() {
 			return (this[members[2]]);
-		}
+		};
 
 		this.getAfterSummary = function() {
 			return (this[members[3]]);
-		}
+		};
 
 		this.getAfterClassSummary = function() {
 			return (this[members[4]]);
-		}
+		};
 
 		this.getTestSummary = function() {
 			return (this[members[5]]);
-		}
+		};
 
 		this.getIgnoreSummary = function() {
 			return (this[members[6]]);
-		}
+		};
 
 		this.getAssertionSummary = function() {
 			return (this[members[7]]);
-		}
+		};
 
 		this.getAssumptionSummary = function() {
 			return (this[members[8]]);
-		}
+		};
 
 		this.getMessageSummary = function() {
 			return (this[members[9]]);
-		}
+		};
 
 	},
 
@@ -147,7 +147,7 @@ var __TestPilot = {
 			this.total++;
 			this.passed += successful == true ? 1 : 0;
 			this.failed += successful == false ? 1 : 0;
-		}
+		};
 	},
 
 	Assertions: {
@@ -316,6 +316,83 @@ var __TestPilot = {
 		return (result);
 	},
 
+	getReport: function() {
+		var blankStr =  "                                                  ";
+
+		var leftJustify = function(str, width) {
+			return ((str + blankStr).substr(0, width));
+		}
+
+		var rightJustify = function(str, width) {
+			str = blankStr + str;
+			return (str.substr(str.length - width));
+		}
+
+		var format = function(status, category, className, operationName, description) {
+			var status = leftJustify(status, 10);
+			var category = leftJustify(category, 15);
+			var className = leftJustify(className, 20);
+			var operationName = leftJustify(operationName, 35);
+			return (status + " " + category + " " + className + " " + operationName + " " + description + "\n");
+		}
+
+		var report = "TestPilot Summary\n\n";
+		var title = leftJustify("Category", 15);
+		var total = leftJustify("Total", 10);
+		var passed = leftJustify("Passed", 10);
+		var failed = leftJustify("Failed", 10);
+		report += title + " " + total + " " + passed + " " + failed + "\n";
+		var summary = __TestPilot.getSummary();
+		for (var i in summary) {
+			if (summary[i].constructor == __TestPilot.SummaryValue) {
+				var title = leftJustify(i, 15);
+				var total = rightJustify(summary[i].total, 5);
+				var passed = rightJustify(summary[i].passed, 11);
+				var failed = rightJustify(summary[i].failed, 10);
+				report += title + " " + total + " " + passed + " " + failed + "\n";
+			}
+		}
+
+		report += "\nTestPilot Details\n\n";
+		report += format("Status", "Category", "Class", "Operation", "Description");
+		var successful = true;
+		var unitTestName = null;
+		var results = __TestPilot.getResults();
+		for (var i = 0; i < results.length; ++i) {
+			var result = results[i];
+			successful &= result.passed;
+
+			if (unitTestName != null && unitTestName != result.unitTestName) {
+				unitTestName = result.unitTestName;
+				report += format(successful ? "Success" : "Failed", "Unit Test", results[i - 1].unitTestName, " ", results[i - 1].unitTestDescription);
+				successful = true;
+			}
+			unitTestName = result.unitTestName;
+			report += format(result.passed ? "Success" : "Failed", result.category, result.unitTestName, result.operationName, "");
+			for (var j = 0; j < result.messages.length; ++j) {
+				report += format("", "Message", result.unitTestName, result.operationName, result.messages[j]);
+			}
+			for (var j = 0; j < result.assumptions.length; ++j) {
+				var assumption = result.assumptions[j];
+				successful &= assumption.assumption;
+				report += format(assumption.assumption ? "True" : "False", "Assumption", result.unitTestName, result.operationName, "[" + assumption.type + "] " + assumption.description);
+			}
+			for (var j = 0; j < result.assertions.length; ++j) {
+				var assertion = result.assertions[j];
+				successful &= assertion.assumption;
+				report += format(assertion.result ? "True" : "False", "Assertion", result.unitTestName, result.operationName, "[" + assertion.type + "] " + assertion.description);
+			}
+			if (result.error != null) {
+				var cause = result.error.cause;
+				successful &= cause.result;
+				report += format("Error", "Error", result.unitTestName, result.operationName, cause.type + ": " + cause.description);
+			}
+		}
+		var i = results.length;
+		report += format(successful ? "Success" : "Failed", "Unit Test", results[i - 1].unitTestName, "", results[i - 1].unitTestDescription);
+		return (report);
+	},
+
 
 	getResults: function() {
 		var results = [];
@@ -427,7 +504,7 @@ var __TestPilot = {
 
 
 			result.error = e;
-			result.passed = !e.cause.isFatalError();
+			result.passed = e.cause != null ? !e.cause.isFatalError() : false;
 		}
 		finally {
 			__TestPilot.updateSummary(__TestPilot.getFrameworkState(operation).category, result.passed);
