@@ -3,7 +3,7 @@
 var test3 = {
 
 	test3_unused1: function() {
-		alert("should not see this - unused 1");
+		console.log("should not see this - unused 1");
 	},
 
 	test3_runBeforeClass: function() {
@@ -13,7 +13,7 @@ var test3 = {
 	},
 
 	test3_unused2: function() {
-		alert("should not see this - unused 2");
+		console.log("should not see this - unused 2");
 	},
 
 	test3_runBefore1: function() {
@@ -32,7 +32,7 @@ var test3 = {
 	test3_test2: function() {
 		$Message("object_literal_test_test2 message");
 		$AssertEquals(2, 3);
-	},
+	}
 
 }
 

@@ -1,14 +1,11 @@
 
-var __TestPilot = require("./testpilot-node.js");
-__TestPilot.setNamespace(module);
+var $$tp = new (require("./testpilot-node.js"))(global, "$");
 
 $UnitTest("test1 - internal method - should fail");
 function test1() {
 
-	$Annotate(this);
-
 	this.test1_unused1 = function() {
-		alert("should not see this - test1 unused 1");
+		console.log("test1_unused1 - an error occurred if this message is visible");
 	}
 
 	$BeforeClass();
@@ -20,7 +17,7 @@ function test1() {
 	}
 
 	this.test1_unused2 = function() {
-		alert("should not see this - test1_unused2");
+		console.log("test1_unused2 - an error occurred if this message is visible");
 	}
 
 	$Before();
@@ -37,36 +34,41 @@ function test1() {
 
 	$Test();
 	this.test1_test1 = function() {
-		$AssumeTrue(true, "some true condition");
-		$AssertEquals(1, 1, "some true assertion");
+		$AssumeTrue(true, "this is a true assumption");
+		$AssertEquals(1, 1, "this is a true assertion");
 	}
 
 	$Test();
 	this.test1_test2 = function() {
-		$Message("test1_test1 message");
-		$AssertEquals(2, 3, "some false assertion");
+		$Message("test1_test2 message");
+		$AssertEquals(2, 3, "this is a false assertion");
 	}
 
 	$Test();
 	this.test1_test3 = function() {
-		$AssumeTrue(false, "some false condition");
+		$AssumeTrue(false, "this is a false condition");
+		$AssertEquals(2, 3, "this is a false assertion");
+	}
+
+	$Test();
+	this.test1_test4 = function() {
+		$Message("test1_test4 message");
+		throw new Error("this test function resulted in an error");
 	}
 
 	$Ignore();
-	this.test1_test4 = function() {
-		alert("should not see this - test1_test4");
+	this.test1_test5 = function() {
+		console.log("test1_test4 - an error occurred if this message is visible");
 	}
-
-	$BindAnnotations(this);
 }
 
-$Annotate(test1);
+$RegisterUnitTest(test1);
 
 $UnitTest("test 2 - prototype - should fail");
 function test2() {
 }
 
-$Annotate(test2);
+$RegisterUnitTest(test2);
 
 $BeforeClass("initial class");
 test2.prototype.test2_runBeforeClass = function() {
@@ -88,23 +90,22 @@ $After("clean up test");
 test2.prototype.test2_runAfter = function() {
 }
 
-$Test("test #3.1");
+$Test("test #2.1");
 test2.prototype.test2_test1 = function() {
 	$AssertEquals(1, 1);
 }
 
-$Test("test #3.2");
+$Test("test #2.2");
 test2.prototype.test2_test2 = function() {
 	$Message("test2_test2 message");
 	$AssertEquals(2, 3);
 }
 
-$BindAnnotations(test2.prototype);
 
 var test3 = {
 
 	test3_unused1: function() {
-		alert("should not see this - unused 1");
+		console.log("should not see this - unused 1");
 	},
 
 	test3_runBeforeClass: function() {
@@ -114,7 +115,7 @@ var test3 = {
 	},
 
 	test3_unused2: function() {
-		alert("should not see this - unused 2");
+		console.log("should not see this - unused 2");
 	},
 
 	test3_runBefore1: function() {
@@ -133,7 +134,7 @@ var test3 = {
 	test3_test2: function() {
 		$Message("object_literal_test_test2 message");
 		$AssertEquals(2, 3);
-	},
+	}
 
 }
 
@@ -149,11 +150,9 @@ $Annotate(test3.test3_test2, $Test());
 $UnitTest("test4 - internal method - no errors");
 function test4() {
 
-	$Annotate(this);
-
 	$Ignore();
 	this.test4_unused1 = function() {
-		alert("should not see this - test4 unused 1");
+		console.log("should not see this - test4 unused 1");
 	}
 
 	$BeforeClass();
@@ -165,7 +164,7 @@ function test4() {
 	}
 
 	this.test4_unused2 = function() {
-		alert("should not see this - test4 unused 2");
+		console.log("should not see this - test4 unused 2");
 	}
 
 	$Before();
@@ -190,12 +189,10 @@ function test4() {
 		$Message("test4_test2 message");
 		$AssertEquals(3, 3);
 	}
-
-	$BindAnnotations(this);
 }
 
-$Annotate(test4);
+$RegisterUnitTest(test4);
 
-__TestPilot.runUnitTests();
-console.log("\n" + __TestPilot.getReport());
-process.exit(0);
+$$tp.runUnitTests();
+console.log("\n" + $$tp.getReport());
+process.exit($$tp.getSummary().getUnitTestSummary().failed == 3 ? 0 : 1);

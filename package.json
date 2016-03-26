@@ -1,6 +1,6 @@
 {
   "name": "testpilot.js",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "annotations.js - a type, method, and object annotations-enabling library for JavaScript.",
   "main": "dist/testpilot-node.js",
 	"scripts": {

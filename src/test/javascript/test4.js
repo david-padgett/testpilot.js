@@ -3,11 +3,9 @@
 $UnitTest("test4 - internal method - no errors");
 function test4() {
 
-	$Annotate(this);
-
 	$Ignore();
 	this.test4_unused1 = function() {
-		alert("should not see this - test4 unused 1");
+		console.log("should not see this - test4 unused 1");
 	}
 
 	$BeforeClass();
@@ -19,7 +17,7 @@ function test4() {
 	}
 
 	this.test4_unused2 = function() {
-		alert("should not see this - test4 unused 2");
+		console.log("should not see this - test4 unused 2");
 	}
 
 	$Before();
@@ -44,8 +42,6 @@ function test4() {
 		$Message("test4_test2 message");
 		$AssertEquals(3, 3);
 	}
-
-	$BindAnnotations(this);
 }
 
-$Annotate(test4);
+$RegisterUnitTest(test4);

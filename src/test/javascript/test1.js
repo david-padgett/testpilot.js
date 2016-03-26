@@ -3,10 +3,8 @@
 $UnitTest("test1 - internal method - should fail");
 function test1() {
 
-	$Annotate(this);
-
 	this.test1_unused1 = function() {
-		alert("should not see this - test1 unused 1");
+		console.log("test1_unused1 - an error occurred if this message is visible");
 	}
 
 	$BeforeClass();
@@ -18,7 +16,7 @@ function test1() {
 	}
 
 	this.test1_unused2 = function() {
-		alert("should not see this - test1_unused2");
+		console.log("test1_unused2 - an error occurred if this message is visible");
 	}
 
 	$Before();
@@ -35,27 +33,32 @@ function test1() {
 
 	$Test();
 	this.test1_test1 = function() {
-		$AssumeTrue(true, "some true condition");
-		$AssertEquals(1, 1, "some true assertion");
+		$AssumeTrue(true, "this is a true assumption");
+		$AssertEquals(1, 1, "this is a true assertion");
 	}
 
 	$Test();
 	this.test1_test2 = function() {
-		$Message("test1_test1 message");
-		$AssertEquals(2, 3, "some false assertion");
+		$Message("test1_test2 message");
+		$AssertEquals(2, 3, "this is a false assertion");
 	}
 
 	$Test();
 	this.test1_test3 = function() {
-		$AssumeTrue(false, "some false condition");
+		$AssumeTrue(false, "this is a false condition");
+		$AssertEquals(2, 3, "this is a false assertion");
+	}
+
+	$Test();
+	this.test1_test4 = function() {
+		$Message("test1_test4 message");
+		throw new Error("this test function resulted in an error");
 	}
 
 	$Ignore();
-	this.test1_test4 = function() {
-		alert("should not see this - test1_test4");
+	this.test1_test5 = function() {
+		console.log("test1_test4 - an error occurred if this message is visible");
 	}
-
-	$BindAnnotations(this);
 }
 
-$Annotate(test1);
+$RegisterUnitTest(test1);

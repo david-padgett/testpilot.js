@@ -4,7 +4,7 @@ $UnitTest("test 2 - prototype - should fail");
 function test2() {
 }
 
-$Annotate(test2);
+$RegisterUnitTest(test2);
 
 $BeforeClass("initial class");
 test2.prototype.test2_runBeforeClass = function() {
@@ -26,15 +26,15 @@ $After("clean up test");
 test2.prototype.test2_runAfter = function() {
 }
 
-$Test("test #3.1");
+$Test("test #2.1");
 test2.prototype.test2_test1 = function() {
 	$AssertEquals(1, 1);
 }
 
-$Test("test #3.2");
+$Test("test #2.2");
 test2.prototype.test2_test2 = function() {
 	$Message("test2_test2 message");
 	$AssertEquals(2, 3);
 }
 
-$BindAnnotations(test2.prototype);
+//$RegisterUnitTest(test2.prototype);

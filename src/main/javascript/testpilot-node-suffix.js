@@ -1,10 +1,4 @@
 // testpilot.js/src/main/javascript/testpilot-node-suffix.js
 
-__TestPilot.addToNamespace = function(name, value) {
-	eval(name + " = value");
-}
-
-__TestPilot.removeFromNamespace = function(name) {
-}
-
-module.exports = __TestPilot;
+var Annotations = require("../../annotations.js/dist/annotations-node.js");
+module.exports = TestPilot;

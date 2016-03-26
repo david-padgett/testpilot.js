@@ -1,5 +1,5 @@
 // testpilot.js/src/test/javascript/node-suffix.js
 
-__TestPilot.runUnitTests();
-console.log("\n" + __TestPilot.getReport());
-process.exit(0);
+$$tp.runUnitTests();
+console.log("\n" + $$tp.getReport());
+process.exit($$tp.getSummary().getUnitTestSummary().failed == 3 ? 0 : 1);

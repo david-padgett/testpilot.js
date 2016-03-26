@@ -53,4 +53,7 @@ testpilot-node-tests.js : \
 	$(SOURCE_DIR)/test/javascript/test4.js \
 	$(SOURCE_DIR)/test/javascript/node-suffix.js
 
+#	$(SOURCE_DIR)/test/javascript/test5.js \
+#	$(SOURCE_DIR)/test/javascript/test6.js \
+
 include $(MAKEFILE_DIR)/javascript_rules.mak
