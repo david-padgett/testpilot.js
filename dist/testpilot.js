@@ -26,7 +26,7 @@
 function TestPilot(rootNamespace, namespacePrefix) {
 
 
-	var __SELF = this;
+	var __THIS = this;
 	var __ROOT_NAMESPACE = rootNamespace;
 	var __NAMESPACE_PREFIX = namespacePrefix == null ? "$" : namespacePrefix;
 	var __APP_PREFIX = __NAMESPACE_PREFIX + this.constructor.name;
@@ -35,7 +35,7 @@ function TestPilot(rootNamespace, namespacePrefix) {
 
 
 	function __getCurrentResult() {
-		var results = __SELF.unitTest[__APP_PREFIX].results;
+		var results = __THIS.unitTest[__APP_PREFIX].results;
 		return (results[results.length - 1][1]);
 	}
 
@@ -65,6 +65,7 @@ function TestPilot(rootNamespace, namespacePrefix) {
 
 		this.delegate = delegate;
 		this.containers = [];
+
 
 
 
@@ -131,7 +132,7 @@ function TestPilot(rootNamespace, namespacePrefix) {
 
 
 		if (__ROOT_NAMESPACE == null) {
-			throw new Error("Unable to initialize " + __SELF.constructor.name + ": No root namespace provided when instantiated.");
+			throw new Error("Unable to initialize " + __THIS.constructor.name + ": No root namespace provided when instantiated.");
 		}
 
 	}
@@ -143,12 +144,13 @@ function TestPilot(rootNamespace, namespacePrefix) {
 
 
 
+
 		this.install = function() {
-			__SELF.initializeAnnotations();
+			__THIS.initializeAnnotations();
 		};
 
 		this.uninstall = function() {
-			__SELF.annotations.removeAnnotationsFramework();
+			__THIS.annotations.removeAnnotationsFramework();
 		};
 
 
@@ -163,6 +165,7 @@ function TestPilot(rootNamespace, namespacePrefix) {
 		this.name = name;
 		this.category = category;
 		this.description = description;
+
 
 
 
@@ -181,23 +184,25 @@ function TestPilot(rootNamespace, namespacePrefix) {
 
 
 
+
 	};
 
 	function Summary() {
 
 
 		var members = [
-			__SELF.annotationTypes.UnitTestAnnotation.name,
-			__SELF.annotationTypes.BeforeClassAnnotation.name,
-			__SELF.annotationTypes.AfterClassAnnotation.name,
-			__SELF.annotationTypes.BeforeAnnotation.name,
-			__SELF.annotationTypes.AfterAnnotation.name,
-			__SELF.annotationTypes.TestAnnotation.name,
-			__SELF.annotationTypes.IgnoreAnnotation.name,
-			__SELF.assertions.assert.name,
-			__SELF.assumptions.assume.name,
-			__SELF.message.name
+			__THIS.annotationTypes.UnitTestAnnotation.name,
+			__THIS.annotationTypes.BeforeClassAnnotation.name,
+			__THIS.annotationTypes.AfterClassAnnotation.name,
+			__THIS.annotationTypes.BeforeAnnotation.name,
+			__THIS.annotationTypes.AfterAnnotation.name,
+			__THIS.annotationTypes.TestAnnotation.name,
+			__THIS.annotationTypes.IgnoreAnnotation.name,
+			__THIS.assertions.assert.name,
+			__THIS.assumptions.assume.name,
+			__THIS.message.name
 		];
+
 
 
 
@@ -261,6 +266,7 @@ function TestPilot(rootNamespace, namespacePrefix) {
 		this.failed = failed;
 
 
+
 		this.update = function(successful) {
 			this.total++;
 			this.passed += successful == true ? 1 : 0;
@@ -313,7 +319,7 @@ function TestPilot(rootNamespace, namespacePrefix) {
 
 		assert: function Assert(assertion, description) {
 			__getCurrentResult().assertions.push(assertion);
-			__SELF.summary[this.assert.name].update(assertion.result);
+			__THIS.summary[this.assert.name].update(assertion.result);
 			assertion.type = assertion.constructor.name;
 			assertion.description = description;
 			assertion.isFatalError = function() {
@@ -416,7 +422,7 @@ function TestPilot(rootNamespace, namespacePrefix) {
 
 		assume: function Assume(assumption, description) {
 			__getCurrentResult().assumptions.push(assumption);
-			__SELF.summary[this.assume.name].update(assumption.result);
+			__THIS.summary[this.assume.name].update(assumption.result);
 			assumption.type = assumption.constructor.name;
 			assumption.description = description;
 			assumption.isFatalError = function() {
@@ -446,6 +452,7 @@ function TestPilot(rootNamespace, namespacePrefix) {
 		}
 
 	};
+
 
 
 
@@ -671,5 +678,5 @@ function TestPilot(rootNamespace, namespacePrefix) {
 	};
 
 
-	__PACKAGE.install([__SELF, this.assertions, this.assumptions]);
+	__PACKAGE.install([__THIS, this.assertions, this.assumptions]);
 }
