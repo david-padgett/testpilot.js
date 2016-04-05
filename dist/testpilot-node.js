@@ -1,3 +1,5 @@
+
+var Annotations = require("annotations.js");
 /*
  * The MIT License (MIT)
  *
@@ -674,5 +676,4 @@ function TestPilot(rootNamespace, namespacePrefix) {
 	__PACKAGE.install([__SELF, this.assertions, this.assumptions]);
 }
 
-var Annotations = require("../../annotations.js/dist/annotations-node.js");
 module.exports = TestPilot;
