@@ -1,6 +1,6 @@
 // testpilot.js/src/test/javascript/test2.js
 
-$UnitTest("test 2 - prototype - should fail");
+$UnitTest("test2 - prototype - should fail");
 function test2() {
 }
 
@@ -36,5 +36,3 @@ test2.prototype.test2_test2 = function() {
 	$Message("test2_test2 message");
 	$AssertEquals(2, 3);
 }
-
-//$RegisterUnitTest(test2.prototype);

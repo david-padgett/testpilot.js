@@ -36,7 +36,7 @@ var test3 = {
 
 }
 
-$Annotate(test3, $UnitTest("test 3 - object literal - should fail"));
+$Annotate(test3, $UnitTest("test3 - object literal - should fail"));
 $Annotate(test3.test3_runBeforeClass, $BeforeClass());
 $Annotate(test3.test3_runAfterClass, $AfterClass());
 $Annotate(test3.test3_runBefore1, $Before());

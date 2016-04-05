@@ -59,6 +59,7 @@ function test1() {
 	this.test1_test5 = function() {
 		console.log("test1_test4 - an error occurred if this message is visible");
 	}
+
 }
 
 $RegisterUnitTest(test1);

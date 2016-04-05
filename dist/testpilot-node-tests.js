@@ -60,11 +60,12 @@ function test1() {
 	this.test1_test5 = function() {
 		console.log("test1_test4 - an error occurred if this message is visible");
 	}
+
 }
 
 $RegisterUnitTest(test1);
 
-$UnitTest("test 2 - prototype - should fail");
+$UnitTest("test2 - prototype - should fail");
 function test2() {
 }
 
@@ -100,7 +101,6 @@ test2.prototype.test2_test2 = function() {
 	$Message("test2_test2 message");
 	$AssertEquals(2, 3);
 }
-
 
 var test3 = {
 
@@ -138,7 +138,7 @@ var test3 = {
 
 }
 
-$Annotate(test3, $UnitTest("test 3 - object literal - should fail"));
+$Annotate(test3, $UnitTest("test3 - object literal - should fail"));
 $Annotate(test3.test3_runBeforeClass, $BeforeClass());
 $Annotate(test3.test3_runAfterClass, $AfterClass());
 $Annotate(test3.test3_runBefore1, $Before());
