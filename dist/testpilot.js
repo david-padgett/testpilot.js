@@ -513,7 +513,7 @@ function TestPilot(rootNamespace, namespacePrefix) {
 					details += __format(assertion.result ? "True" : "False", "Assertion", unitTestState.name, operationState.name, "[" + assertion.type + "] " + (assertion.description != null ? assertion.description : ""));
 				}
 				if (result.error != null && !result.error.frameworkError) {
-					details += __format("Error", "Error", unitTestState.name, result.name, result.error.cause == null ? "" : result.error.cause.type + ": " + result.error.cause.description);
+					details += __format("Error", "Error", unitTestState.name, operationState.name, result.error.cause == null ? "" : result.error.cause.type + ": " + result.error.cause.description);
 				}
 			}
 			report += __format(unitTestState.successful ? "Success" : "Failed", this.annotationTypes.UnitTestAnnotation.name, unitTestState.name, "", unitTestState.description) + details;
