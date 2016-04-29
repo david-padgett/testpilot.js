@@ -31,13 +31,13 @@ function TestPilot(rootNamespace, namespacePrefix) {
 	var __THIS = this;
 	var __ROOT_NAMESPACE = rootNamespace;
 	var __NAMESPACE_PREFIX = namespacePrefix == null ? "$" : namespacePrefix;
-	var __APP_PREFIX = __NAMESPACE_PREFIX + this.constructor.name;
-	var __PACKAGE = new __Package(new __PackageDelegate());
+	var __MODULE_PREFIX = __NAMESPACE_PREFIX + this.constructor.name;
+	var __MODULE = new __Module(new __ModuleDelegate());
 	var __BLANKS = new Array(51).join(' ');
 
 
 	function __getCurrentResult() {
-		var results = __THIS.unitTest[__APP_PREFIX].results;
+		var results = __THIS.unitTest[__MODULE_PREFIX].results;
 		return (results[results.length - 1][1]);
 	}
 
@@ -59,14 +59,14 @@ function TestPilot(rootNamespace, namespacePrefix) {
 	}
 
 
-	function __Package(delegate) {
+	function __Module(delegate) {
 
 
 
 
 
-		this.delegate = delegate;
-		this.containers = [];
+		this.__delegate = delegate;
+		this.__containers = [];
 
 
 
@@ -78,14 +78,14 @@ function TestPilot(rootNamespace, namespacePrefix) {
 
 
 		this.invokeDelegate = function(operation) {
-			if (this.delegate != null && this.delegate[operation] != null && this.delegate[operation].constructor === Function) {
+			if (this.__delegate != null && this.__delegate[operation] != null && this.__delegate[operation].constructor === Function) {
 				delegate[operation].apply(delegate, Array.prototype.slice.call(arguments, 1));
 			}
 		}
 
 
 		this.initializeDispatcher = function(container, api) {
-			var dispatcher = function __PackageApiDispatcher() {
+			var dispatcher = function __ModuleApiDispatcher() {
 				var args = Array.prototype.slice.call(arguments, 0);
 				return (api.apply(container, args));
 			};
@@ -94,24 +94,37 @@ function TestPilot(rootNamespace, namespacePrefix) {
 
 
 		this.install = function install(containers) {
-			this.containers = containers;
-			this.manageAliasedFunctions(this.containers, true);
+			this.__containers = containers;
+			this.manageAliases(this.__containers, true);
 			this.invokeDelegate(arguments.callee.name);
 		};
 
 
-		this.manageAliasedFunctions = function(containers, addFunctions) {
+		this.manageAliases = function(containers, addFunctions) {
 			for (var i = 0; i < containers.length; ++i) {
 				var container = containers[i];
 				for (var j in container) {
-					if (container[j] != null && container[j].constructor === Function && container[j].name.length > 0) {
-						var api = container[j];
-						var namespaceName = __NAMESPACE_PREFIX + container[j].name;
-						if (addFunctions) {
-							this.addToNamespace(namespaceName, this.initializeDispatcher(container, api));
+					if (container[j] != null) {
+						var name = null;
+						var value = null;
+						if (container[j].constructor !== Function && j[0] != "_") {
+							name = __NAMESPACE_PREFIX + j;
+							value = container[j];
 						}
 						else {
-							this.removeFromNamespace(namespaceName);
+							if (container[j].constructor === Function && container[j].name.length > 0) {
+								var api = container[j];
+								var name = __NAMESPACE_PREFIX + container[j].name;
+								value = this.initializeDispatcher(container, api);
+							}
+						}
+						if (name != null && value != null) {
+							if (addFunctions) {
+								this.addToNamespace(name, value);
+							}
+							else {
+								this.removeFromNamespace(name);
+							}
 						}
 					}
 				}
@@ -129,7 +142,7 @@ function TestPilot(rootNamespace, namespacePrefix) {
 
 		this.uninstall = function uninstall() {
 			this.invokeDelegate(arguments.callee.name);
-			this.manageAliasedFunctions(this.containers, false);
+			this.manageAliases(this.__containers, false);
 		};
 
 
@@ -139,7 +152,7 @@ function TestPilot(rootNamespace, namespacePrefix) {
 
 	}
 
-	function __PackageDelegate() {
+	function __ModuleDelegate() {
 
 
 
@@ -464,7 +477,7 @@ function TestPilot(rootNamespace, namespacePrefix) {
 		var result = [];
 		for (var name in unitTest) {
 			var operation = unitTest[name];
-			var state = operation[__APP_PREFIX];
+			var state = operation[__MODULE_PREFIX];
 			if (operation != null && operation.constructor == Function && state != null && (category == null || state.category == category)) {
 				result.push(operation);
 			}
@@ -495,13 +508,13 @@ function TestPilot(rootNamespace, namespacePrefix) {
 
 		for (var i = 0; i < this.unitTests.length; ++i) {
 			var unitTest = this.unitTests[i];
-			var unitTestState = unitTest[__APP_PREFIX];
+			var unitTestState = unitTest[__MODULE_PREFIX];
 			var results = unitTestState.results;
 			var details = "";
 			for (var j = 0; j < results.length; ++j) {
 				var operation = results[j][0];
 				var result = results[j][1];
-				var operationState = operation[__APP_PREFIX];
+				var operationState = operation[__MODULE_PREFIX];
 				details += __format(result.successful ? "Success" : "Failed", operationState.category, unitTestState.name, operationState.name, result.description != null ? result.description : "");
 				for (var k = 0; k < result.messages.length; ++k) {
 					details += __format("", "Message", unitTestState.name, operationState.name, result.messages[k]);
@@ -531,13 +544,13 @@ function TestPilot(rootNamespace, namespacePrefix) {
 
 			var unitTest = this.unitTests[i];
 			if (arguments.length == 0) {
-				results = results.concat(unitTest[__APP_PREFIX].results);
+				results = results.concat(unitTest[__MODULE_PREFIX].results);
 			}
 			else {
 				var unitTestTypes = Array.prototype.slice.call(arguments);
 				for (var j = 0; j < unitTestTypes.length; ++j) {
 					if (unitTestTypes[j] == unitTest.constructor || unitTestTypes[j] == unitTest) {
-						results = results.concat(unitTest[__APP_PREFIX].results);
+						results = results.concat(unitTest[__MODULE_PREFIX].results);
 						break;
 					}
 				}
@@ -565,8 +578,8 @@ function TestPilot(rootNamespace, namespacePrefix) {
 	};
 
 	this.initializeUnitTest = function(unitTest) {
-		if (unitTest != null && unitTest[__APP_PREFIX] == null) {
-			unitTest[__APP_PREFIX] = {
+		if (unitTest != null && unitTest[__MODULE_PREFIX] == null) {
+			unitTest[__MODULE_PREFIX] = {
 				name: null,
 				description: null,
 				successful: true,
@@ -588,7 +601,7 @@ function TestPilot(rootNamespace, namespacePrefix) {
 				this.initializeUnitTest(unitTest);
 
 
-				var state = unitTest[__APP_PREFIX];
+				var state = unitTest[__MODULE_PREFIX];
 				state.name = unitTestType.constructor == Function ? unitTestType.name : unitTest.constructor.name;
 				state.description = this.annotations.getAnnotations(unitTestType)[0].description;
 				for (var operationName in unitTest) {
@@ -596,14 +609,14 @@ function TestPilot(rootNamespace, namespacePrefix) {
 					if (operation != null && operation.constructor == Function && operationName != "constructor") {
 						var annotations = this.annotations.getAnnotations(operation);
 						if (annotations != null && annotations.length > 0) {
-							operation[__APP_PREFIX] = new Operation(operationName, annotations[0].constructor.name, annotations[0].description);
+							operation[__MODULE_PREFIX] = new Operation(operationName, annotations[0].constructor.name, annotations[0].description);
 						}
 					}
 				}
 			}
 			catch (e) {
 				this.initializeUnitTest(unitTestType);
-				unitTestType[__APP_PREFIX].successful = false;
+				unitTestType[__MODULE_PREFIX].successful = false;
 				this.unitTests.push(unitTestType);
 			}
 		}
@@ -614,7 +627,7 @@ function TestPilot(rootNamespace, namespacePrefix) {
 
 
 		var result = new Result(unitTest, operation);
-		unitTest[__APP_PREFIX].results.push([operation, result]);
+		unitTest[__MODULE_PREFIX].results.push([operation, result]);
 		try {
 			operation.apply(unitTest, []);
 		}
@@ -632,8 +645,8 @@ function TestPilot(rootNamespace, namespacePrefix) {
 			}
 		}
 		finally {
-			unitTest[__APP_PREFIX].successful = unitTest[__APP_PREFIX].successful && result.successful;
-			this.summary[operation[__APP_PREFIX].category].update(result.successful);
+			unitTest[__MODULE_PREFIX].successful = unitTest[__MODULE_PREFIX].successful && result.successful;
+			this.summary[operation[__MODULE_PREFIX].category].update(result.successful);
 		}
 	};
 
@@ -672,7 +685,7 @@ function TestPilot(rootNamespace, namespacePrefix) {
 				this.invokeOperations(this.unitTest, this.annotationTypes.AfterAnnotation.name);
 			}
 			this.invokeOperations(this.unitTest, this.annotationTypes.AfterClassAnnotation.name);
-			this.summary[this.annotationTypes.UnitTestAnnotation.name].update(this.unitTest[__APP_PREFIX].successful);
+			this.summary[this.annotationTypes.UnitTestAnnotation.name].update(this.unitTest[__MODULE_PREFIX].successful);
 			this.summary[this.annotationTypes.IgnoreAnnotation.name].total += this.getOperations(this.unitTest, this.annotationTypes.IgnoreAnnotation.name).length;
 		}
 		this.unitTest = null;
@@ -680,7 +693,7 @@ function TestPilot(rootNamespace, namespacePrefix) {
 	};
 
 
-	__PACKAGE.install([__THIS, this.assertions, this.assumptions]);
+	__MODULE.install([__THIS, this.assertions, this.assumptions]);
 }
 
 module.exports = TestPilot;
