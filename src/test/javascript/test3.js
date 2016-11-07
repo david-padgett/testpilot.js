@@ -34,7 +34,7 @@ var test3 = {
 		$AssertEquals(2, 3);
 	}
 
-}
+};
 
 $Annotate(test3, $UnitTest("test3 - object literal - should fail"));
 $Annotate(test3.test3_runBeforeClass, $BeforeClass());

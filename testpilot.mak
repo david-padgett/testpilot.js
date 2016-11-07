@@ -21,39 +21,55 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# testpilot.js/testpilot.mak
+#** makestuff/src/global/init_rule.mak
 
-MAKEFILE_DIR=node_modules/etc.mak/dist
+REPO_DIR=.makestuff
+MAKESTUFF_REPO=github.com/SummitStreet/makestuff@master.git
+MAKESTUFF=$(shell python -c 'import os, re, sys ; R, V = re.match(r"(.+?)(@.*)?.git", sys.argv[2]).groups() ; print os.sep.join([sys.argv[1], R, V[1:]])' $(REPO_DIR) $(MAKESTUFF_REPO))
 
-include $(MAKEFILE_DIR)/javascript_vars.mak
+# The default target is 'all'.
+
+all :
+
+### Initialize/bootstrap makestuff environment
+### usage: make [-f <makefile>] init [REPO_DIR=<external_repo_base_directory>]
+
+makestuff_init :
+	@rm -fr $(MAKESTUFF)
+	@python -c 'import os, re, sys ; C = "git clone --branch {1} https://{0}.git {2}" ; R, V = re.match(r"(.+?)(@.*)?.git", sys.argv[2]).groups() ; D = os.sep.join([sys.argv[1], R, V[1:]]) ; None if os.path.isdir(D) else os.system(C.format(R, V[1:], D))' $(REPO_DIR) $(MAKESTUFF_REPO) >/dev/null 2>/dev/null
+	@rm -fr $(REPO_DIR)/.tmp ; mv $(MAKESTUFF)/dist $(REPO_DIR)/.tmp ; rm -fr $(MAKESTUFF) ; mv $(REPO_DIR)/.tmp $(MAKESTUFF)
+
+.PHONY : all makestuff_init
+
+-include $(MAKESTUFF)/javascript_vars.mak
 
 BUILD_DEPENDENCIES=\
-	github.com/david-padgett/annotations.js.git
+	github.com/david-padgett/annotations.js.git.npm \
+	github.com/SummitStreet/launchpad.git
 
 BUILD_TARGETS=\
-	testpilot.js \
-	testpilot-node.js
+	$(DIST_DIR)/testpilot.js \
+	$(DIST_DIR)/testpilot-node.js
 
-TEST_TARGETS=\
-	testpilot-node-tests.js
+JAVASCRIPT_TEST_COMPONENTS=\
+	$(DIST_DIR)/testpilot-node-tests.js
 
-testpilot.js : \
-	$(SOURCE_DIR)/main/javascript/testpilot.js
+$(DIST_DIR)/testpilot.js : \
+	$(REPO_DIR)/github.com/SummitStreet/launchpad/master/javascript/service.js \
+	$(SRC_DIR)/main/javascript/testpilot.js
 
-testpilot-node.js : \
-	$(SOURCE_DIR)/main/javascript/testpilot-node-prefix.js \
-	$(SOURCE_DIR)/main/javascript/testpilot.js \
-	$(SOURCE_DIR)/main/javascript/testpilot-node-suffix.js
+$(DIST_DIR)/testpilot-node.js : \
+	$(SRC_DIR)/main/javascript/testpilot-node-prefix.js \
+	$(REPO_DIR)/github.com/SummitStreet/launchpad/master/javascript/service.js \
+	$(SRC_DIR)/main/javascript/testpilot.js \
+	$(SRC_DIR)/main/javascript/testpilot-node-suffix.js
 
-testpilot-node-tests.js : \
-	$(SOURCE_DIR)/test/javascript/node-prefix.js \
-	$(SOURCE_DIR)/test/javascript/test1.js \
-	$(SOURCE_DIR)/test/javascript/test2.js \
-	$(SOURCE_DIR)/test/javascript/test3.js \
-	$(SOURCE_DIR)/test/javascript/test4.js \
-	$(SOURCE_DIR)/test/javascript/node-suffix.js
+$(DIST_DIR)/testpilot-node-tests.js : \
+	$(SRC_DIR)/test/javascript/node-prefix.js \
+	$(SRC_DIR)/test/javascript/test1.js \
+	$(SRC_DIR)/test/javascript/test2.js \
+	$(SRC_DIR)/test/javascript/test3.js \
+	$(SRC_DIR)/test/javascript/test4.js \
+	$(SRC_DIR)/test/javascript/node-suffix.js
 
-#	$(SOURCE_DIR)/test/javascript/test5.js \
-#	$(SOURCE_DIR)/test/javascript/test6.js \
-
-include $(MAKEFILE_DIR)/javascript_rules.mak
+-include $(MAKESTUFF)/javascript_rules.mak
